@@ -16,7 +16,53 @@ public class Escape {
     public record Result(int[] path, int visited, int deadEnds) {}
 
     public static Result escape(Input.Walls w, int[] broken) {
-        // TODO
-        return new Result(new int[0], 0, 0);
+        int n = w.cells(), cols = w.cols(), exit = n - 1;
+        int[][] open = Graphs.open(w, broken);   // open[c] = cells behind broken walls
+
+        // Dead ends: cells with exactly one open door
+        int deadEnds = 0;
+        for (int c = 0; c < n; c++)
+            if (open[c].length == 1) deadEnds++;
+
+        boolean[] visited = new boolean[n];
+        int[] dir = new int[n];     // next direction to try for each cell
+        int[] stack = new int[n];   // our own stack = current path
+        int top = 0;    // number of cells in the stack
+
+        stack[top++] = 0;   // start in cell 0
+        visited[0] = true;
+        int count = 1;
+
+        while (top > 0) {
+            int cur = stack[top - 1];   // cell on top of the stack
+            if (cur == exit) break;     // found the exit
+
+            if (dir[cur] == 4) {    // all 4 directions tried: dead end, go back
+                top--;
+                continue;
+            }
+
+            int d = dir[cur]++;     // take next direction
+            int nb;     // neighbour in direction d
+            if (d == 0)      nb = cur - cols;   // up
+            else if (d == 1) nb = cur + 1;  // right
+            else if (d == 2) nb = cur + cols;   // down
+            else             nb = cur - 1;  // left
+
+            if (isOpen(open, cur, nb) && !visited[nb]) {
+                visited[nb] = true;
+                count++;
+                stack[top++] = nb;  // step forward
+            }
+        }
+
+        int[] path = java.util.Arrays.copyOf(stack, top);   // stack = path from 0 to exit
+        return new Result(path, count, deadEnds);
+    }
+
+    // true if nb is in the list of open neighbours of cur
+    static boolean isOpen(int[][] open, int cur, int nb) {
+        for (int x : open[cur]) if (x == nb) return true;
+        return false;
     }
 }
