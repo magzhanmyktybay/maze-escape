@@ -26,6 +26,12 @@ public class DisjointSetTest {
 
         // TODO: add your own checks here
 
+        DisjointSet big = new DisjointSet(1000);
+        for (int i = 0; i + 1 < 1000; i++) big.union(i, i + 1);
+        check(big.count() == 1, "chain of 1000: one set");
+        check(big.connected(0, 999), "0 and 999 are together");
+        check(!big.union(5, 5), "union of a cell with itself is false");
+
         System.out.println(failed == 0 ? "All checks passed." : failed + " checks failed.");
     }
 }
