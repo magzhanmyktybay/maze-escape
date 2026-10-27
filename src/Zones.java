@@ -53,7 +53,7 @@ public class Zones {
 
         // Pass 2: reversed slides, from the last finished cell
         int[] zoneOf = new int[n];
-        java.util.Arrays.fill(zoneOf, -1);           // -1 = no zone yet
+        java.util.Arrays.fill(zoneOf, -1);  // -1 = no zone yet
         int zones = 0;
 
         for (int j = n - 1; j >= 0; j--) {
@@ -65,7 +65,7 @@ public class Zones {
             while (top > 0) {
                 int x = stack[--top];
                 for (int i : into[x]) {
-                    int y = s.from()[i];                  // cell at the START of slide i
+                    int y = s.from()[i];    // cell at the START of slide i
                     if (zoneOf[y] == -1) {
                         zoneOf[y] = zones;
                         stack[top++] = y;
@@ -84,7 +84,34 @@ public class Zones {
      * [1] the cost of the cheapest route from the zone of cell 0 to the zone of the last cell.
      */
     public static long[] routes(Input.Slides s, int[] zoneOf, int zoneCount) {
-        // TODO
-        return new long[]{0, 0};
+        // Slides between different zones, grouped by the zone they leave
+        java.util.List<Integer>[] out = new java.util.List[zoneCount];
+        for (int z = 0; z < zoneCount; z++) out[z] = new java.util.ArrayList<>();
+        for (int i = 0; i < s.count(); i++) {
+            int x = zoneOf[s.from()[i]], y = zoneOf[s.to()[i]];
+            if (x != y) out[x].add(i);  // slide inside a zone is free, skip it
+        }
+
+        long[] stages = new long[zoneCount];
+        java.util.Arrays.fill(stages, 1);   // every zone alone is a chain of 1
+
+        long INF = Long.MAX_VALUE;
+        long[] dist = new long[zoneCount];
+        java.util.Arrays.fill(dist, INF);
+        dist[zoneOf[0]] = 0;    // start zone costs 0
+
+        // Zones in the order of their numbers = topological order
+        for (int x = 0; x < zoneCount; x++) {
+            for (int i : out[x]) {
+                int y = zoneOf[s.to()[i]];
+                stages[y] = Math.max(stages[y], stages[x] + 1);    // longest chain
+                if (dist[x] != INF)
+                    dist[y] = Math.min(dist[y], dist[x] + s.time()[i]);     // cheapest route
+            }
+        }
+
+        long maxStages = 0;
+        for (long st : stages) maxStages = Math.max(maxStages, st);
+        return new long[]{maxStages, dist[zoneOf[s.n() - 1]]};
     }
 }
