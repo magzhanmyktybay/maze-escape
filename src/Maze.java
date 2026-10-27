@@ -11,7 +11,17 @@ public class Maze {
      */
     public static int[] breakWalls(Input.Walls w) {
         // TODO
-        return new int[0];
+        DisjointSet ds = new DisjointSet(w.cells());
+        int[] broken = new int[w.cells() - 1];   // insert here indexes of broken walls
+        int cnt = 0;                             // count how many walls we broke
+
+        for (int k = 0; k < w.count(); k++) {
+            if (ds.union(w.a()[k], w.b()[k])) {            // two cells of wall k
+                broken[cnt] = k;               // insert the index k into the broken array
+                cnt++; // add +1 to count of broken walls
+            }
+        }
+        return broken;
     }
 
     /**
