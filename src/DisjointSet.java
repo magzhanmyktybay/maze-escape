@@ -8,7 +8,6 @@ public class DisjointSet {
     int[] size;
     int sets;
     public DisjointSet(int n) {
-        // TODO
         parent = new int[n];
         size = new int[n];
         for (int i = 0; i < n; i++) {
@@ -20,7 +19,6 @@ public class DisjointSet {
 
     /** The root of the set that contains x. */
     public int find(int x) {
-        // TODO
         if (x != parent[x]) {
             parent[x] = find(parent[x]);
             return parent[x];
@@ -30,7 +28,6 @@ public class DisjointSet {
 
     /** Joins the sets of a and b. Returns true if they were different sets, false if they were already one set. */
     public boolean union(int a, int b) {
-        // TODO
         int ra = find(a);
         int rb = find(b);
         if (ra != rb) {
@@ -49,7 +46,6 @@ public class DisjointSet {
     }
 
     public boolean connected(int a, int b) {
-        // TODO
         if (find(a) == find(b)) {
             return true;
         }
@@ -58,7 +54,6 @@ public class DisjointSet {
 
     /** Number of sets now. */
     public int count() {
-        // TODO
         return sets;
     }
 

@@ -24,8 +24,6 @@ public class DisjointSetTest {
         check(d.count() == 3, "3 sets: {0,1,2,3} {4} {5}");
         check(d.find(4) == 4 && d.find(5) == 5, "a single cell is its own root");
 
-        // TODO: add your own checks here
-
         DisjointSet big = new DisjointSet(1000);
         for (int i = 0; i + 1 < 1000; i++) big.union(i, i + 1);
         check(big.count() == 1, "chain of 1000: one set");
